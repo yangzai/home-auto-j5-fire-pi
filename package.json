@@ -1,0 +1,17 @@
+{
+  "name": "home-auto-j5-fire-pi",
+  "version": "1.0.0",
+  "description": "NUS ISS SG4211 Cloud Computing CA ",
+  "main": "main.js",
+  "dependencies": {
+    "firebase": "^3.0.2",
+    "johnny-five": "^0.9.50",
+    "raspi-io": "^6.0.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SE24 FT2",
+  "license": "ISC"
+}
