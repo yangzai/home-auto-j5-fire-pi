@@ -56,7 +56,7 @@ board.on('ready', function() {
     // adc default index: custom, control, light, temp
     // set ctrl reg on 1st read and discard read from prev ctrl;
     this.i2cReadOnce(ADC_I2C_ADDR, TEMP_ADC_CTRL, 1);
-    this.i2cRead(ADC_I2C_ADDR, 1, bytes => {
+    this.i2cRead(ADC_I2C_ADDR, TEMP_ADC_CTRL, 1, bytes => {
         adcRef.push({
             temp: bytes[0],
             timestamp: FIREBASE_TIMESTAMP
