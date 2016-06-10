@@ -6,6 +6,7 @@
   "dependencies": {
     "firebase": "^3.0.2",
     "johnny-five": "^0.9.50",
+    "pushbullet": "^1.4.3",
     "raspi-io": "^6.0.1"
   },
   "devDependencies": {},

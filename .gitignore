@@ -46,3 +46,4 @@ Temporary Items
 .idea
 node_modules
 service-account-credentials.json
+config.json

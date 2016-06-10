@@ -3,7 +3,7 @@ var firebase = require('firebase');
 const FIREBASE_TIMESTAMP = firebase.database.ServerValue.TIMESTAMP;
 firebase.initializeApp({
     serviceAccount: 'service-account-credentials.json',
-    databaseURL: 'https://cloud-team5.firebaseio.com',
+    databaseURL: 'https://cloud-team5.firebaseio.com'
 });
 var db = firebase.database();
 
@@ -21,6 +21,21 @@ var adcRef = db.ref('adc');
 
 var ledRef = db.ref('led');
 var toggleLedRef = ledRef.once.bind(ledRef, 'value', snap => ledRef.set(!snap.val()));
+
+
+// notification setup
+const TEMP_THRESHOLD = 50;
+var config = require('./config');
+var pbConfig = config.pushbullet;
+var PushBullet = require('pushbullet');
+var pusher = new PushBullet(pbConfig.apiKey);
+const PB_MESSAGE = `Your temperature has exceeded a dangerous level of ${TEMP_THRESHOLD}\u2103.`;
+const PB_TITLE = 'Temperature Sensor Alert';
+var isMessageSent = false;
+var pushTempAlertMessage = pusher.note.bind(pusher, pbConfig.deviceId, PB_TITLE, PB_MESSAGE, (err, res) => {
+    if (err) return console.error(err);
+    console.log(res);
+});
 
 
 // board setup
@@ -60,7 +75,7 @@ board.on('ready', function() {
     button.on('press', toggleLedRef);
     
     this.repl.inject({board, led}); //for debugging
-    this.i2cConfig(5000);
+    this.i2cConfig(2000);
 
     // adc default index: custom, control, light, temp
     // set ctrl reg on 1st read and discard read from prev ctrl;
@@ -76,5 +91,16 @@ board.on('ready', function() {
             temp: steinhart,
             timestamp: FIREBASE_TIMESTAMP
         });
+
+        if (steinhart < TEMP_THRESHOLD) {
+            if (isMessageSent) isMessageSent = false;
+            return;
+        }
+
+        // else >= TEMP_THRESHOLD
+        if (isMessageSent) return;
+
+        pushTempAlertMessage();
+        isMessageSent = true;
     });
 });

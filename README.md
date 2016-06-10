@@ -11,6 +11,8 @@ following their Debian instructions. For RPi v1, install the latest ARMv6 binari
 
 3. Include `service-account-credentials.json` to root of app as per the Firebase API requirements.
 
-3. Run `npm install` at the root of the project.
+4. Create `config.json` based on `config.json.sample`.
 
-4. Make sure the I2C devices required are connected before running.
+5. Run `npm install` at the root of the project.
+
+6. Make sure the I2C devices required are connected before running.

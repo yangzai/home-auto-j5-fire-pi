@@ -1,0 +1,6 @@
+{
+  "pushbullet": {
+    "apiKey": "YOUR-API-KEY",
+    "deviceId": "YOUR-DEVICE-ID"
+  }
+}
