@@ -24,15 +24,24 @@ var toggleLedRef = ledRef.once.bind(ledRef, 'value', snap => ledRef.set(!snap.va
 
 
 // board setup
-const ADC_I2C_ADDR = 0x48;
-const TEMP_ADC_CTRL = 2;
-const LED_PIN = 'GPIO26'; //pin 37
-const BUTTON_PIN = 'GPIO19'; //pin 35
 var raspi = require('raspi-io');
 var five = require('johnny-five');
 var board = new five.Board({
     io: new raspi()
 });
+
+const ADC_I2C_ADDR = 0x48;
+const TEMP_ADC_CTRL = 2;
+const LED_PIN = 'GPIO26'; //pin 37
+const BUTTON_PIN = 'GPIO19'; //pin 35
+
+// temperature conversion
+const THERMISTOR_NOMINAL = 10000;
+const TEMPERATURE_NOMINAL = 25;
+const B_COEFF = 3950;
+const SERIES_RESISTOR = 10000;
+const K_C_OFFSET = 273.15;
+const ADC_MAX_VALUE = 255;
 
 // board ready
 board.on('ready', function() {
@@ -57,8 +66,14 @@ board.on('ready', function() {
     // set ctrl reg on 1st read and discard read from prev ctrl;
     this.i2cReadOnce(ADC_I2C_ADDR, TEMP_ADC_CTRL, 1);
     this.i2cRead(ADC_I2C_ADDR, TEMP_ADC_CTRL, 1, bytes => {
+        var resistance = SERIES_RESISTOR / (ADC_MAX_VALUE / bytes[0] - 1);
+
+        var steinhart = Math.log(resistance / THERMISTOR_NOMINAL) / B_COEFF;    // 1/B * ln(R/Ro)
+        steinhart += 1 / (TEMPERATURE_NOMINAL + K_C_OFFSET);                    // + (1/To)
+        steinhart = 1 / steinhart - K_C_OFFSET;                                 // Invert and convert to C
+
         adcRef.push({
-            temp: bytes[0],
+            temp: steinhart,
             timestamp: FIREBASE_TIMESTAMP
         });
     });
