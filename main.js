@@ -30,7 +30,7 @@ var pbConfig = config.pushbullet;
 var PushBullet = require('pushbullet');
 var pusher = new PushBullet(pbConfig.apiKey);
 const PB_MESSAGE = `Your temperature has exceeded a dangerous level of ${TEMP_THRESHOLD}\u2103.`;
-const PB_TITLE = 'Temperature Sensor Alert';
+const PB_TITLE = `Temperature Sensor Alert (${TEMP_THRESHOLD}\u2103)`;
 var isMessageSent = false;
 var pushTempAlertMessage = pusher.note.bind(pusher, pbConfig.deviceId, PB_TITLE, PB_MESSAGE, (err, res) => {
     if (err) return console.error(err);
